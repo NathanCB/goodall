@@ -54,7 +54,7 @@ public class EventController {
 
     @RequestMapping(path = "/events/searchcity/{city}", method = RequestMethod.GET)//public
     public Map<String, Object> filterEventsByCity(@PathVariable String city) {
-        ArrayList<Event> filteredEvents = events.findAllByCity(city);
+        ArrayList<Event> filteredEvents = events.findAllByCityIgnoreCaseContaining(city);
         return rootSerializer.serializeMany("/events", filteredEvents, eventSerializer);
     }
 
