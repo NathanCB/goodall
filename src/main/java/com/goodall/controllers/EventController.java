@@ -52,6 +52,12 @@ public class EventController {
         return rootSerializer.serializeMany("/events", filteredEvents, eventSerializer);
     }
 
+    @RequestMapping(path = "/events/searchcity/{city}", method = RequestMethod.GET)//public
+    public Map<String, Object> filterEventsByCity(@PathVariable String city) {
+        ArrayList<Event> filteredEvents = events.findAllByCity(city);
+        return rootSerializer.serializeMany("/events", filteredEvents, eventSerializer);
+    }
+
     @RequestMapping(path = "/events/{id}", method = RequestMethod.GET)//public
     public Map<String, Object> viewEvent(@PathVariable String id, HttpServletResponse response) {
         Event event = events.findFirstById(id);

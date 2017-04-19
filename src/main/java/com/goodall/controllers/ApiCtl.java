@@ -11,6 +11,7 @@ import org.springframework.web.client.RestTemplate;
 public class ApiCtl {
 
     private final static String APIKEY = "AIzaSyCTNiSGsl475_XqhD6mDf0oa-RiHi68WuQ";
+    private final static String NASA_KEY = "eUKTxqEpAbx6V3IEv7BTpZDl5rw3reu7EWluZhzT";
     // working example url request with street only address
     // https://maps.googleapis.com/maps/api/geocode/json?address=2221w21stst&AIzaSyCTNiSGsl475_XqhD6mDf0oa-RiHi68WuQ
     // build a string request for latitude/longitude lookup
@@ -36,7 +37,7 @@ public class ApiCtl {
         String[] values = coordinates.split(",\\s*");
         String lat = values[0];
         String lon = values[1];
-        String requestUrl = "https://api.nasa.gov/planetary/earth/imagery?lon="+ lon + "&lat=" + lat + "&api_key=DEMO_KEY";
+        String requestUrl = "https://api.nasa.gov/planetary/earth/imagery?lon="+ lon + "&lat=" + lat + "&api_key=" + NASA_KEY;
 
         RestTemplate template = new RestTemplate();
         ResponseEntity<NasaImagery> nasaImagery = template.exchange(requestUrl, HttpMethod.GET, entity, NasaImagery.class);
