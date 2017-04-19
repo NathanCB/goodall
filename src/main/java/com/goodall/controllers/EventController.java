@@ -92,7 +92,6 @@ public class EventController {
                     file.getInputStream(),
                     new ObjectMetadata());
 
-
             // save object to s3
             s3.putObject(s3Req);
         }
