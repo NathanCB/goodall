@@ -4,6 +4,7 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.goodall.entities.Event;
 import com.goodall.entities.User;
+import com.goodall.entities.searches.SearchResult;
 import com.goodall.parsers.RootParser;
 import com.goodall.serializers.EventSerializer;
 import com.goodall.serializers.RootSerializer;
@@ -46,17 +47,37 @@ public class EventController {
         return rootSerializer.serializeMany("/events", showEvents, eventSerializer);
     }
 
-    @RequestMapping(path = "/events/searchzip/{zip}", method = RequestMethod.GET)//public
-    public Map<String, Object> filterEventsByZipcode(@PathVariable String zip) {
-        ArrayList<Event> filteredEvents = events.findAllByZip(zip);
-        return rootSerializer.serializeMany("/events", filteredEvents, eventSerializer);
+    @RequestMapping(value = "/events?searchBy={searchType}&value={val}", method = RequestMethod.GET)//public
+    public Map<String, Object> searchByZipOrCity(@PathVariable String searchType, @PathVariable String val, HttpServletResponse response) throws IOException {
+        SearchResult filteredEvents = new SearchResult();
+        if(searchType != null) {
+            if (searchType.equalsIgnoreCase("city")) {
+                ArrayList<Event> results = events.findAllByCityIgnoreCase(val);
+                filteredEvents.setFilteredEvents(results);
+            } else if (searchType.equalsIgnoreCase("zip")) {
+                ArrayList<Event> results = events.findAllByZip(val);
+                filteredEvents.setFilteredEvents(results);
+            } else {
+                // invalid search by type
+                response.sendError(400, "Invalid search by type.");
+            }
+        }
+        else {
+            // missing search by type
+            response.sendError(400, "Missing search by type");
+        }
+
+        ArrayList<SearchResult> searchResults = new ArrayList<>();
+        searchResults.add(filteredEvents);
+
+        return rootSerializer.serializeMany("/events", searchResults, eventSerializer);
     }
 
-    @RequestMapping(path = "/events/searchcity/{city}", method = RequestMethod.GET)//public
-    public Map<String, Object> filterEventsByCity(@PathVariable String city) {
-        ArrayList<Event> filteredEvents = events.findAllByCityIgnoreCaseContaining(city);
-        return rootSerializer.serializeMany("/events", filteredEvents, eventSerializer);
-    }
+//    @RequestMapping(path = "/events/{city}", method = RequestMethod.GET)//public
+//    public Map<String, Object> filterEventsByCity(@PathVariable String city) {
+//        ArrayList<Event> filteredEvents = events.findAllByCityIgnoreCase(city);
+//        return rootSerializer.serializeMany("/events", filteredEvents, eventSerializer);
+//    }
 
     @RequestMapping(path = "/events/{id}", method = RequestMethod.GET)//public
     public Map<String, Object> viewEvent(@PathVariable String id, HttpServletResponse response) {

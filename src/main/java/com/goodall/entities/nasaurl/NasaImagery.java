@@ -17,5 +17,4 @@ public class NasaImagery {
         this.url = url;
     }
 
-    public NasaImagery() {}
 }
