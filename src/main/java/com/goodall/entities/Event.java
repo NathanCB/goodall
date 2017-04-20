@@ -38,7 +38,7 @@ public class Event implements HasId {
     @Column
     String date;
 
-    @Column
+    @Column(columnDefinition = "text")
     String description;
 
     @Column
