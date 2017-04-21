@@ -42,21 +42,26 @@ public class EventController {
     EventSerializer eventSerializer = new EventSerializer();
 
     @RequestMapping(path = "/events", method = RequestMethod.GET)//public
-    public Map<String, Object> displayEvents() {
+    public Map<String, Object> displayEvents(@RequestParam(required = false) String searchBy,
+        @RequestParam(required = false) String value,
+        HttpServletResponse response) throws IOException {
+
+        if (searchBy != null && value != null) {
+            return searchByZipOrCity(searchBy, value, response);
+        }
+
         Iterable<Event> showEvents = events.findAll();
         return rootSerializer.serializeMany("/events", showEvents, eventSerializer);
     }
 
-    @RequestMapping(value = "/events?searchBy={searchType}&value={val}", method = RequestMethod.GET)//public
-    public Map<String, Object> searchByZipOrCity(@PathVariable String searchType, @PathVariable String val, HttpServletResponse response) throws IOException {
-        SearchResult filteredEvents = new SearchResult();
+    public Map<String, Object> searchByZipOrCity(String searchType, String val, HttpServletResponse response) throws IOException {
+        ArrayList<Event> results = null;
+
         if(searchType != null) {
             if (searchType.equalsIgnoreCase("city")) {
-                ArrayList<Event> results = events.findAllByCityIgnoreCase(val);
-                filteredEvents.setFilteredEvents(results);
+                results = events.findAllByCityContainingIgnoreCase(val);
             } else if (searchType.equalsIgnoreCase("zip")) {
-                ArrayList<Event> results = events.findAllByZip(val);
-                filteredEvents.setFilteredEvents(results);
+                results = events.findAllByZip(val);
             } else {
                 // invalid search by type
                 response.sendError(400, "Invalid search by type.");
@@ -67,10 +72,7 @@ public class EventController {
             response.sendError(400, "Missing search by type");
         }
 
-        ArrayList<SearchResult> searchResults = new ArrayList<>();
-        searchResults.add(filteredEvents);
-
-        return rootSerializer.serializeMany("/events", searchResults, eventSerializer);
+        return rootSerializer.serializeMany("/events", results, eventSerializer);
     }
 
 //    @RequestMapping(path = "/events/{city}", method = RequestMethod.GET)//public
