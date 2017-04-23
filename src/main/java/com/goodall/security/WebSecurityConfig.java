@@ -44,8 +44,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 // Allow view single events without login
                 .antMatchers(HttpMethod.GET, "/events/{id}")
                 .permitAll()
-                // Allow view filtered events by zipcode without login
-                .antMatchers(HttpMethod.GET, "events?searchBy={searchType}&value={val}")
+                // Allow glitch without login
+                .antMatchers(HttpMethod.GET, "/events/glitch/{id}")
                 .permitAll()
                 // All other requests must be authenticated
                 .anyRequest()

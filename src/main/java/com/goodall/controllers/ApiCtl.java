@@ -17,6 +17,11 @@ public class ApiCtl {
     // build a string request for latitude/longitude lookup
     // https://maps.googleapis.com/maps/api/geocode/outputFormat?parameters
 
+    //glitch static url api
+    private final static String glitchApi = "http://hitode909.appspot.com/glitch/api?uri=";
+    private final static String glitchApi2 = "http://hitode909.appspot.com/glitch/api2?uri=";
+    public static String defaultImgUrl = "https://dncache-mauganscorp.netdna-ssl.com/thumbseg/453/453966-bigthumbnail.jpg";
+
     public String makeGeocodeRequest(String address){
         HttpHeaders headers = new HttpHeaders();
         HttpEntity<String> entity = new HttpEntity<>(headers);
@@ -44,5 +49,15 @@ public class ApiCtl {
         String nasaImageUrl = nasaImagery.getBody().getUrl();
 
         return nasaImageUrl;
+    }
+
+    public String getGlitchImageUrl(String url){
+        String glitchUrl;
+        if(url != null || !url.contains("")) {
+            glitchUrl = glitchApi + url;
+        }else{
+            glitchUrl = defaultImgUrl;
+        }
+        return glitchUrl;
     }
 }

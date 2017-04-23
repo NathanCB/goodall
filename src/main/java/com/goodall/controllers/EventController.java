@@ -3,10 +3,11 @@ package com.goodall.controllers;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.goodall.entities.Event;
+import com.goodall.entities.Glitch;
 import com.goodall.entities.User;
-import com.goodall.entities.searches.SearchResult;
 import com.goodall.parsers.RootParser;
 import com.goodall.serializers.EventSerializer;
+import com.goodall.serializers.GlitchSerializer;
 import com.goodall.serializers.RootSerializer;
 import com.goodall.services.EventRepository;
 import com.goodall.services.UserRepository;
@@ -40,11 +41,12 @@ public class EventController {
 
     RootSerializer rootSerializer = new RootSerializer();
     EventSerializer eventSerializer = new EventSerializer();
+    GlitchSerializer glitchSerializer = new GlitchSerializer();
 
     @RequestMapping(path = "/events", method = RequestMethod.GET)//public
     public Map<String, Object> displayEvents(@RequestParam(required = false) String searchBy,
-        @RequestParam(required = false) String value,
-        HttpServletResponse response) throws IOException {
+                                             @RequestParam(required = false) String value,
+                                             HttpServletResponse response) throws IOException {
 
         if (searchBy != null && value != null) {
             return searchByZipOrCity(searchBy, value, response);
@@ -57,7 +59,7 @@ public class EventController {
     public Map<String, Object> searchByZipOrCity(String searchType, String val, HttpServletResponse response) throws IOException {
         ArrayList<Event> results = null;
 
-        if(searchType != null) {
+        if (searchType != null) {
             if (searchType.equalsIgnoreCase("city")) {
                 results = events.findAllByCityContainingIgnoreCase(val);
             } else if (searchType.equalsIgnoreCase("zip")) {
@@ -66,20 +68,13 @@ public class EventController {
                 // invalid search by type
                 response.sendError(400, "Invalid search by type.");
             }
-        }
-        else {
+        } else {
             // missing search by type
             response.sendError(400, "Missing search by type");
         }
 
         return rootSerializer.serializeMany("/events", results, eventSerializer);
     }
-
-//    @RequestMapping(path = "/events/{city}", method = RequestMethod.GET)//public
-//    public Map<String, Object> filterEventsByCity(@PathVariable String city) {
-//        ArrayList<Event> filteredEvents = events.findAllByCityIgnoreCase(city);
-//        return rootSerializer.serializeMany("/events", filteredEvents, eventSerializer);
-//    }
 
     @RequestMapping(path = "/events/{id}", method = RequestMethod.GET)//public
     public Map<String, Object> viewEvent(@PathVariable String id, HttpServletResponse response) {
@@ -93,15 +88,15 @@ public class EventController {
     @RequestMapping(path = "/events/upload", method = RequestMethod.POST)
     public Map<String, Object> createEvent(@RequestParam("file") MultipartFile file,
                                            @RequestParam("address") String address,
-                                           @RequestParam ("city")String city,
-                                           @RequestParam ("state")String state,
-                                           @RequestParam ("zip")String zip,
-                                           @RequestParam ("title")String title,
-                                           @RequestParam ("artist")String artist,
-                                           @RequestParam ("date")String date,
-                                           @RequestParam ("description")String description,
-                                           @RequestParam ("start-time")String startTime,
-                                           @RequestParam ("end-time")String endTime,
+                                           @RequestParam("city") String city,
+                                           @RequestParam("state") String state,
+                                           @RequestParam("zip") String zip,
+                                           @RequestParam("title") String title,
+                                           @RequestParam("artist") String artist,
+                                           @RequestParam("date") String date,
+                                           @RequestParam("description") String description,
+                                           @RequestParam("start-time") String startTime,
+                                           @RequestParam("end-time") String endTime,
                                            HttpServletResponse response) throws IOException {
         Authentication u = SecurityContextHolder.getContext().getAuthentication();
         User user = users.findFirstByUsername(u.getName());
@@ -187,4 +182,24 @@ public class EventController {
         );
     }
 
+    @RequestMapping(path = "events/glitch/{id}", method = RequestMethod.GET)
+    public Map<String, Object> glitchPhoto(@PathVariable String id, HttpServletResponse response) throws IOException {
+        Event event = events.findFirstById(id);
+        Glitch glitch = new Glitch();
+        if (event.getBgUrl() != null) {
+            try {
+                ApiCtl apiResult = new ApiCtl();
+                glitch.setUrl(apiResult.getGlitchImageUrl(event.getBgUrl()));
+            } catch (Exception e) {
+                response.sendError(400, "Unable to glitch.");
+            }
+        } else {
+            glitch.setUrl(ApiCtl.defaultImgUrl);
+        }
+        return rootSerializer.serializeOne(
+                "events/glitch/" + event.getId(),
+                glitch,
+                glitchSerializer
+        );
+    }
 }
