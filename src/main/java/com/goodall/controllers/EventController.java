@@ -43,6 +43,8 @@ public class EventController {
     EventSerializer eventSerializer = new EventSerializer();
     GlitchSerializer glitchSerializer = new GlitchSerializer();
 
+    String testUrl = "https://upload.wikimedia.org/wikipedia/commons/4/47/PNG_transparency_demonstration_1.png";
+
     @RequestMapping(path = "/events", method = RequestMethod.GET)//public
     public Map<String, Object> displayEvents(@RequestParam(required = false) String searchBy,
                                              @RequestParam(required = false) String value,
@@ -126,7 +128,7 @@ public class EventController {
         String coordinates = findLoc.makeGeocodeRequest(address);
         event.setCoordinates(coordinates);
 
-        event.setBgUrl(apiResult.getGlitchImageUrl(event.getPhotoUrl()));
+        event.setBgUrl(apiResult.getGlitchImageUrl(testUrl));
 //        event.setBgUrl(findLoc.getNasaImageUrl(coordinates));
 
         try {
