@@ -1,0 +1,1 @@
+web:    java -Dspring.profiles.active=heroku -Dserver.port=$PORT $JAVA_OPTS -jar build/libs/goodall-1.0.jar
