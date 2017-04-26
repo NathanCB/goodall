@@ -122,9 +122,11 @@ public class EventController {
 
         ApiCtl findLoc = new ApiCtl();
         ApiCtl apiResult = new ApiCtl();
+
         String coordinates = findLoc.makeGeocodeRequest(address);
         event.setCoordinates(coordinates);
-        event.setBgUrl(apiResult.getGlitchImageUrl(event.getBgUrl()));
+
+        event.setBgUrl(apiResult.getGlitchImageUrl(event.getPhotoUrl()));
 //        event.setBgUrl(findLoc.getNasaImageUrl(coordinates));
 
         try {
