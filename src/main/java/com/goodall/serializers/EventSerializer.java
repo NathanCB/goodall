@@ -31,7 +31,9 @@ public class EventSerializer extends JsonDataSerializer {
         result.put("coordinates", event.getCoordinates());
         result.put("bg-url", event.getBgUrl());
         User user = event.getUser();
-        user.setPassword("REDACTED");
+        if (user != null) {
+            user.setPassword("REDACTED");
+        }
         result.put("created-by", user);
         result.put("photo-url", event.getPhotoUrl());
         return result;

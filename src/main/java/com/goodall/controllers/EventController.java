@@ -53,9 +53,11 @@ public class EventController {
         if (searchBy != null && value != null) {
             return searchByZipOrCity(searchBy, value, response);
         }
+        else {
+            Iterable<Event> showEvents = events.findAll();
+            return rootSerializer.serializeMany("/events", showEvents, eventSerializer);
+        }
 
-        Iterable<Event> showEvents = events.findAll();
-        return rootSerializer.serializeMany("/events", showEvents, eventSerializer);
     }
 
     public Map<String, Object> searchByZipOrCity(String searchType, String val, HttpServletResponse response) throws IOException {

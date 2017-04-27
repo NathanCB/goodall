@@ -26,5 +26,4 @@ public class GlitchSerializer extends JsonDataSerializer{
         return new HashMap<String, String>();
     }
 
-
 }
