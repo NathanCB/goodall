@@ -1,6 +1,6 @@
 # goodall 
 ### Create an event. Support the arts!
-Goodall is a nimble web application to quickly find and create hyper-local arts events based on a user's chosen location. Think, "Buskar" with an electronic notification board.  
+Goodall is a nimble web application to quickly find and create hyper-local art event announcements based on a user's chosen location. Think, "Buskar" with an electronic notification board.  
 
 ## Tech Features (Backend)
 - JAVA
